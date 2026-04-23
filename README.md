@@ -66,48 +66,70 @@ smart-campus-api/
                     ├── filter/
                     └── resource/
 
-Conceptual Answers
-Part 1.2 - JAX-RS Lifecycle.
+## Conceptual Answers
 
-The default is that JAX-RS will tend to allocate a new resource instance per request, rather than have one singleton resource serving all clients. This proves to be safer since specific user-request information is not disseminated to other users. Nevertheless, in this coursework the in-memory collections are kept in a shared data store meaning that the application still maintains a shared state. Concurrency has to be taken into account due to that. To prevent inconsistent updates, thread-safe collections or synchronization mechanisms would be significant in a larger system.
+### Part 1.1 - JAX-RS Lifecycle
 
-Part 1.2 - Why Hypermedia is Important.
+By default, JAX-RS usually creates a new resource instance for each request rather than using a single shared resource for all clients. This is safer because request-specific information is not shared between users.
 
-Hypermedia assists the client to find the next place to go by giving him a link back or providing him with a path of related resources in the response. This minimizes the amount of hard-coded assumptions in the client and simplifies the API to read and navigate. The discovery endpoint in this project is a link to the core collections like rooms and sensors.
+However, in this coursework the in-memory collections are stored in a shared data store, which means the application still has shared state. Because of that, concurrency must be considered carefully. In a larger system, thread-safe collections or synchronization mechanisms would be important to avoid inconsistent updates.
 
-Part 2.1 - IDs Only vs Full Room Objects.
+### Part 1.2 - Why Hypermedia is Important
 
-Sending out only IDs makes responses smaller and saves on bandwidth, particularly when there are numerous related resources. Sending complete objects is more convenient to the client since he can get more information at a single request. The full room objects are more convenient in this project to test and demonstrate since the responses of the API are easier to view in Postman.
+Hypermedia helps the client discover where to go next by providing links or related resource paths in the response. This reduces hard-coded assumptions in the client and makes the API easier to understand and navigate.
 
-2.2 - Is DELETE Idempotent.
+In this project, the discovery endpoint provides links to the main collections such as rooms and sensors.
 
-DELETE is said to be idempotent since making the same delete request again and again does not continue to alter the system even when the initial deletion has been successfully accomplished. After removing the room, no new effect is created when making additional DELETE requests. The resulting system state is the same and hence the operation is idempotent.
+### Part 2.1 - IDs Only vs Full Room Objects
 
-Part 3.1 - What Will Happen when the Client Sends the Wrong Type of Content.
+Returning only IDs makes responses smaller and saves bandwidth, especially when there are many related resources. Returning full objects is more convenient for the client because it provides more information in a single request.
 
-The POST endpoints consume Media type via @Consumes(Mediatype.APPLICATION_JSON) and the API uses JSON request bodies. When a client makes a request in another form of content like plain text or XML, JAX-RS will not handle the request as valid JSON. This helps the API to avoid accepting non-valid data formats as inputs.
+In this project, returning full room objects is more useful for testing and demonstration because the API responses are easier to inspect in Postman.
 
-Part 3.2 - Why Query Parameters are superior with respect to filtering.
+### Part 2.2 - Is DELETE Idempotent
 
-Filtering with query parameters would be more appropriate since the client is still asking the same collection resource with optional conditions applied. In the case of /sensors?type=CO2, it is clear that the sensors collection is being filtered by type. This can be extended more easily and flexibly than encoding filters directly into the path.
+DELETE is considered idempotent because sending the same delete request multiple times does not continue changing the system after the first successful deletion.
 
-Part 4.1 - The advantages of the Sub-Resource Locator Pattern.
+Once the room has been removed, further DELETE requests do not create any new effect. The final system state remains the same, which is why the operation is still idempotent.
 
-The sub-resource locator pattern is used to enhance organization by putting nested resource logic into a specific class. Sensor-specific information in this project is managed by SensorResource and sensor-reading history is managed by SensorReadingResource. This simplifies the code to read, maintain and expand.
+### Part 3.1 - What Happens if the Client Sends the Wrong Content Type
 
-Part 4.3 -Companies and organisations in historical contexts.
+The POST endpoints use `@Consumes(MediaType.APPLICATION_JSON)`, which means the API expects JSON request bodies.
 
-The sensors are capable of generating numerous readings as time goes on and, therefore, the project keeps a history of the reading in a list linked with the sensor ID. Once a new reading is added, the new reading is stored in the history list and the current value of the sensor is changed. This enables the API to give the most recent sensor state as well as the entire history of sensor state.
+If a client sends a different content type such as plain text or XML, JAX-RS will not process the request as valid JSON. This prevents the API from accepting invalid data formats as normal input.
 
-Part 5.1 – Why 422 Is Better Than 404 Here
+### Part 3.2 - Why Query Parameters Are Better for Filtering
 
-The HTTP 422 is more suitable when the endpoint is present and the request is in the JSON format, but one of the fields is semantically wrong. Here, a roomId can be a non-existent room. A 404 would normally imply that the endpoint itself was not found, which is another kind of issue.
+Query parameters are more suitable for filtering because the client is still requesting the same collection resource, but with optional conditions applied.
 
-Part 5.2 - Stack Traces should not be exposed.
+For example, `/sensors?type=CO2` clearly means the sensors collection filtered by type. This is more flexible and easier to extend later than encoding filters directly into the path.
 
-Stack traces are not to be publicized as they give internal information that includes class names, package structure, methods and framework. This may introduce security threats, as well as provide clients with confusing technical output. Instead, the API must record detailed errors internally and respond to the external error with safe and well-structured error responses.
+### Part 4.1 - Benefits of the Sub-Resource Locator Pattern
 
-Part 5.3.1 - Reasoning why you should use filters to log.
+The sub-resource locator pattern improves code organization by moving nested resource logic into a dedicated class.
 
-Logging is more suited to filters since logging is a cross-cutting issue, impacting all requests and responses. The inclusion of logging code within the body of each resource method would cause duplication and make the code more difficult to maintain. With request and response filters, logging is implemented in the API in a single central location.
+In this project, sensor-related logic is handled in `SensorResource`, while reading history is handled in `SensorReadingResource`. This makes the code easier to read, maintain, and extend.
 
+### Part 4.2 - Historical Data Management
+
+Each sensor can produce many readings over time, so the project stores reading history in a list associated with the sensor ID.
+
+When a new reading is added, it is stored in the history list and the sensor’s `currentValue` is updated. This allows the API to provide both the latest sensor state and the full historical record.
+
+### Part 5.1 - Why 422 Is Better Than 404 Here
+
+HTTP 422 is more appropriate when the endpoint exists and the JSON format is valid, but one field inside the request is semantically incorrect.
+
+In this case, a `roomId` may refer to a room that does not exist. A 404 would normally mean that the endpoint itself could not be found, which is a different problem.
+
+### Part 5.2 - Why Stack Traces Should Not Be Exposed
+
+Stack traces should not be exposed because they reveal internal information such as class names, package structure, methods, and framework details.
+
+This creates security risks and can also confuse clients with technical output they do not understand. Instead, the API should log detailed errors internally and return safe, structured error responses externally.
+
+### Part 5.3 - Why Use Filters for Logging
+
+Filters are better for logging because logging is a cross-cutting concern that affects all requests and responses.
+
+If logging code is written inside every resource method, the code becomes repetitive and harder to maintain. By using request and response filters, logging is applied consistently across the whole API from one central place.
