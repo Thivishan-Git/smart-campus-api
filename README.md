@@ -12,38 +12,46 @@ The main idea of this API is to help store and manage smart campus data in an or
 This project solves the problem of managing room and sensor data manually. Instead of keeping everything in random files or writing it down by hand, this API gives a proper system to create, view, and manage the data.
 This project uses in-memory storage, which means the data is stored only while the server is running. If the server stops, the data will be lost.
 
-Technologies Used
-•	Java
-•	Maven
-•	JAX-RS / Jersey
-•	Grizzly HTTP Server
-•	Jackson / JSON
-•	Postman
-•	Git / GitHub
-Main Features
-•	Room management
-•	Sensor management
-•	Sensor readings
-•	Filtering sensors by type
-•	Logging requests and responses
-•	Custom exception handling
-API Endpoints
-Discovery
-•	GET /
-Rooms
-•	GET /rooms
-•	POST /rooms
-•	GET /rooms/{roomId}
-•	DELETE /rooms/{roomId}
-Sensors
-•	GET /sensors
-•	GET /sensors?type=value
-•	POST /sensors
-•	GET /sensors/{sensorId}
-Sensor Readings
-•	GET /sensors/{sensorId}/readings
-•	POST /sensors/{sensorId}/readings
-Project Structure
+## Technologies Used
+- **Java**
+- **Maven**
+- **JAX-RS / Jersey**
+- **Grizzly HTTP Server**
+- **Jackson / JSON**
+- **Postman**
+- **Git / GitHub**
+
+## Main Features
+- Room management
+- Sensor management
+- Sensor readings
+- Filtering sensors by type
+- Logging requests and responses
+- Custom exception handling
+
+## API Endpoints
+
+### Discovery
+- `GET /`
+
+### Rooms
+- `GET /rooms`
+- `POST /rooms`
+- `GET /rooms/{roomId}`
+- `DELETE /rooms/{roomId}`
+
+### Sensors
+- `GET /sensors`
+- `GET /sensors?type=value`
+- `POST /sensors`
+- `GET /sensors/{sensorId}`
+
+### Sensor Readings
+- `GET /sensors/{sensorId}/readings`
+- `POST /sensors/{sensorId}/readings`
+
+## Project Structure
+```text
 smart-campus-api/
 ├── pom.xml
 ├── README.md
@@ -59,6 +67,7 @@ smart-campus-api/
                     ├── mapper/
                     ├── filter/
                     └── resource/
+
 
 
 How to Run the Project
@@ -120,17 +129,29 @@ curl -X POST http://localhost:8080/sensors/CO2-001/readings \
 -H "Content-Type: application/json" \
 -d "{\"value\":550.5}"
 
+
 Error Handling
+
 This API also handles errors properly.
 •	403 Forbidden – This happens when a reading is added to a sensor that is in maintenance mode.
+
 •	404 Not Found – This happens when the client tries to access a room or sensor that does not exist.
+
 •	409 Conflict – This happens when trying to delete a room that still has sensors inside it.
+
 •	422 Unprocessable Entity – This happens when a sensor is created with a room ID that does not exist.
 Notes
+
 •	This project uses in-memory storage, so data is lost when the server stops.
+
+
 •	This API was made for coursework purposes.
+
 •	Postman was used to test all endpoints.
+
 •	Git and GitHub were used to save and manage the code.
+
+
 
 
 
