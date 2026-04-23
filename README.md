@@ -110,3 +110,4 @@ Stack traces are not to be publicized as they give internal information that inc
 Part 5.3.1 - Reasoning why you should use filters to log.
 
 Logging is more suited to filters since logging is a cross-cutting issue, impacting all requests and responses. The inclusion of logging code within the body of each resource method would cause duplication and make the code more difficult to maintain. With request and response filters, logging is implemented in the API in a single central location.
+
