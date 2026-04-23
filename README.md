@@ -7,7 +7,131 @@
 
 
 ## Overview
-This project is a RESTful API built using JAX-RS (Jersey) and Grizzly HTTP Server for managing rooms, sensors, and sensor readings in a smart campus environment. The API uses in-memory data structures instead of a database, as required by the coursework.
+This project is a RESTful API for a smart campus system. It is used to manage rooms, sensors, and sensor readings.
+The main idea of this API is to help store and manage smart campus data in an organized way. For example, a room can have sensors, and each sensor can store readings like temperature or CO2 values.
+This project solves the problem of managing room and sensor data manually. Instead of keeping everything in random files or writing it down by hand, this API gives a proper system to create, view, and manage the data.
+This project uses in-memory storage, which means the data is stored only while the server is running. If the server stops, the data will be lost.
+
+Technologies Used
+•	Java
+•	Maven
+•	JAX-RS / Jersey
+•	Grizzly HTTP Server
+•	Jackson / JSON
+•	Postman
+•	Git / GitHub
+Main Features
+•	Room management
+•	Sensor management
+•	Sensor readings
+•	Filtering sensors by type
+•	Logging requests and responses
+•	Custom exception handling
+API Endpoints
+Discovery
+•	GET /
+Rooms
+•	GET /rooms
+•	POST /rooms
+•	GET /rooms/{roomId}
+•	DELETE /rooms/{roomId}
+Sensors
+•	GET /sensors
+•	GET /sensors?type=value
+•	POST /sensors
+•	GET /sensors/{sensorId}
+Sensor Readings
+•	GET /sensors/{sensorId}/readings
+•	POST /sensors/{sensorId}/readings
+Project Structure
+smart-campus-api/
+├── pom.xml
+├── README.md
+└── src/
+    └── main/
+        └── java/
+            └── com/
+                └── westminster/
+                    ├── config/
+                    ├── model/
+                    ├── store/
+                    ├── exception/
+                    ├── mapper/
+                    ├── filter/
+                    └── resource/
+
+
+How to Run the Project
+1. Open the project in Apache NetBeans or VS Code.
+2. Make sure Java and Maven are installed.
+3. Open the terminal inside the project folder.
+4. Run these commands:
+mvn clean compile
+mvn exec:java
+
+5. The server will run on: http://localhost:8080/
+Example JSON Requests
+Create Room
+{
+  "id": "LIB-301",
+  "name": "Library Quiet Study",
+  "capacity": 40
+}
+
+Create Sensor
+{
+  "id": "CO2-001",
+  "type": "CO2",
+  "status": "ACTIVE",
+  "currentValue": 0.0,
+  "roomId": "LIB-301"
+}
+
+Add Reading
+{
+  "value": 550.5
+}
+
+Sample curl Commands
+Get Discovery Endpoint
+curl http://localhost:8080/
+
+Get All Rooms
+curl http://localhost:8080/rooms
+
+Create Room
+curl -X POST http://localhost:8080/rooms \
+-H "Content-Type: application/json" \
+-d "{\"id\":\"LIB-301\",\"name\":\"Library Quiet Study\",\"capacity\":40}"
+
+Get All Sensors
+curl http://localhost:8080/sensors
+
+Create Sensor
+curl -X POST http://localhost:8080/sensors \
+-H "Content-Type: application/json" \
+-d "{\"id\":\"CO2-001\",\"type\":\"CO2\",\"status\":\"ACTIVE\",\"currentValue\":0.0,\"roomId\":\"LIB-301\"}"
+
+Get Sensor Readings
+curl http://localhost:8080/sensors/CO2-001/readings
+
+Add Sensor Reading
+curl -X POST http://localhost:8080/sensors/CO2-001/readings \
+-H "Content-Type: application/json" \
+-d "{\"value\":550.5}"
+
+Error Handling
+This API also handles errors properly.
+•	403 Forbidden – This happens when a reading is added to a sensor that is in maintenance mode.
+•	404 Not Found – This happens when the client tries to access a room or sensor that does not exist.
+•	409 Conflict – This happens when trying to delete a room that still has sensors inside it.
+•	422 Unprocessable Entity – This happens when a sensor is created with a room ID that does not exist.
+Notes
+•	This project uses in-memory storage, so data is lost when the server stops.
+•	This API was made for coursework purposes.
+•	Postman was used to test all endpoints.
+•	Git and GitHub were used to save and manage the code.
+
 
 
 ## Part 1.2 - Why Hypermedia is Important.
@@ -49,62 +173,3 @@ Stack traces are not to be publicized as they give internal information that inc
 ## Part 5.3.1 - Reasoning why you should use filters to log.
 
 Logging is more suited to filters since logging is a cross-cutting issue, impacting all requests and responses. The inclusion of logging code within the body of each resource method would cause duplication and make the code more difficult to maintain. With request and response filters, logging is implemented in the API in a single central location.
-
-
-
-## Technologies Used
-- Java 17
-- Maven
-- JAX-RS (Jersey)
-- Grizzly HTTP Server
-- JSON (Jackson)
-- Postman
-- GitHub
-
-## Features
-- Discovery endpoint
-- Room management
-- Sensor management
-- Sensor filtering by type
-- Sensor reading history
-- Custom exception handling
-- Request and response logging
-- In-memory data storage
-
-## Discovery
-- `GET /`
-
-### Rooms
-- `GET /rooms`
-- `POST /rooms`
-- `GET /rooms/{roomId}`
-- `DELETE /rooms/{roomId}`
-
-### Sensors
-- `GET /sensors`
-- `GET /sensors?type=value`
-- `POST /sensors`
-- `GET /sensors/{sensorId}`
-
-### Sensor Readings
-- `GET /sensors/{sensorId}/readings`
-- `POST /sensors/{sensorId}/readings`
-
-
-## Project Structure
-```text
-smart-campus-api/
-├── pom.xml
-├── README.md
-└── src/
-    └── main/
-        └── java/
-            └── com/
-                └── westminster/
-                    ├── config/
-                    ├── model/
-                    ├── store/
-                    ├── exception/
-                    ├── mapper/
-                    ├── filter/
-                    └── resource/
